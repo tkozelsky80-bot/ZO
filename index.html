@@ -1,15 +1,143 @@
 <!DOCTYPE html>
-<html>
+<html lang="cs">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZO ČSÚ</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 24px;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+    }
+
+    .panel {
+      border: 1px solid #b9cbe0;
+      background: #eef5fc;
+      padding: 16px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    input, select, button {
+      font-size: 14px;
+      padding: 8px;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      padding-top: 8px;
+    }
+
+    .muted {
+      color: #555;
+      font-size: 14px;
+    }
+
+    .actions {
+      margin-top: 16px;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    #chartWrap {
+      margin-top: 24px;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin-top: 24px;
+      width: 100%;
+      font-size: 14px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px 8px;
+      text-align: left;
+    }
+
+    th {
+      background: #f3f3f3;
+    }
+  </style>
 </head>
 <body>
   <h1>Zahraniční obchod ČR</h1>
-  <p>První verze dashboardu</p>
+  <p class="muted">Interaktivní dashboard – první verze filtrů</p>
 
-  <canvas id="chart"></canvas>
+  <div class="panel">
+    <div class="grid">
+      <div class="field">
+        <label for="displayLevel">Úroveň zobrazení</label>
+        <select id="displayLevel">
+          <option value="HS4" selected>Harmonizovaný systém (4)</option>
+          <option value="HS2">Harmonizovaný systém (2)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="selectionLevel">Úroveň výběru</label>
+        <select id="selectionLevel">
+          <option value="HS4" selected>Harmonizovaný systém (4)</option>
+          <option value="HS2">Harmonizovaný systém (2)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="goodsCode">Kód zboží</label>
+        <input id="goodsCode" type="text" placeholder="např. 0702">
+      </div>
+
+      <div class="field">
+        <label>Země</label>
+        <input type="text" value="Země upravené pro statistiku" disabled>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:16px;">
+      <label>Směr obchodu</label>
+      <div class="radio-group">
+        <label><input type="radio" name="tradeFlow" value="export" checked> Vývoz</label>
+        <label><input type="radio" name="tradeFlow" value="import"> Dovoz</label>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="applyFilters">Použít filtr</button>
+    </div>
+  </div>
+
+  <div id="chartWrap">
+    <canvas id="chart"></canvas>
+  </div>
+
+  <table id="table"></table>
 
   <script src="script.js"></script>
 </body>
