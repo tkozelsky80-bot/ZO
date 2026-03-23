@@ -11,7 +11,8 @@ function parseNumber(value) {
 }
 
 function getSelectedTradeFlow() {
-  return document.querySelector('input[name="tradeFlow"]:checked').value;
+  const selected = document.querySelector('input[name="tradeFlow"]:checked');
+  return selected ? selected.value : "export";
 }
 
 function filterData(rows) {
@@ -27,16 +28,11 @@ function filterData(rows) {
       return false;
     }
 
-    // Zatím je směr obchodu jen připravený v UI.
-    // Pokud budeš mít zvlášť CSV pro vývoz a dovoz,
-    // doplníme sem skutečné filtrování podle tradeFlow.
-    if (tradeFlow === "export") {
-      return true;
-    }
-
-    if (tradeFlow === "import") {
-      return true;
-    }
+    // Zatím je přepínač vývoz/dovoz jen připraven v rozhraní.
+    // Jakmile budeme mít v datech rozlišení směru obchodu,
+    // doplníme sem skutečné filtrování.
+    if (tradeFlow === "export") return true;
+    if (tradeFlow === "import") return true;
 
     return true;
   });
@@ -54,8 +50,7 @@ function aggregateByCountry(rows) {
     sums[country] = (sums[country] || 0) + value;
   });
 
-  return Object.entries(sums)
-    .sort((a, b) => b[1] - a[1]);
+  return Object.entries(sums).sort((a, b) => b[1] - a[1]);
 }
 
 function renderChart(rows) {
@@ -97,17 +92,16 @@ function renderTable(rows) {
   if (!rawRows.length) return;
 
   const headers = rawRows[0];
-  const filtered = rows;
 
   const headerRow = document.createElement("tr");
   headers.forEach(cell => {
     const th = document.createElement("th");
-    th.textContent = cell.replace(/"/g, "");
+    th.textContent = String(cell).replace(/"/g, "");
     headerRow.appendChild(th);
   });
   table.appendChild(headerRow);
 
-  filtered.forEach(row => {
+  rows.forEach(row => {
     const tr = document.createElement("tr");
     row.forEach(cell => {
       const td = document.createElement("td");
