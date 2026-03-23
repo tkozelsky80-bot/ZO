@@ -140,5 +140,24 @@
   <table id="table"></table>
 
   <script src="script.js"></script>
+  <select id="displayLevel">
+  <option value="HS4" selected>Harmonizovaný systém (4)</option>
+  <option value="HS2">Harmonizovaný systém (2)</option>
+</select>
+
+<select id="selectionLevel">
+  <option value="HS4" selected>Harmonizovaný systém (4)</option>
+  <option value="HS2">Harmonizovaný systém (2)</option>
+</select>
+
+<input id="goodsCode" type="text" placeholder="např. 0702">
+
+<label><input type="radio" name="tradeFlow" value="export" checked> Vývoz</label>
+<label><input type="radio" name="tradeFlow" value="import"> Dovoz</label>
+
+<button id="applyFilters">Použít filtr</button>
+
+<canvas id="chart"></canvas>
+<table id="table"></table>
 </body>
 </html>
