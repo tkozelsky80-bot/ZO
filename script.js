@@ -10,27 +10,60 @@ function parseNumber(value) {
   );
 }
 
+function cleanText(value) {
+  return String(value).replace(/"/g, "").trim();
+}
+
 function getSelectedTradeFlow() {
   const selected = document.querySelector('input[name="tradeFlow"]:checked');
   return selected ? selected.value : "export";
 }
 
+function populateGoodsSelect(rows) {
+  const select = document.getElementById("goodsCode");
+  const goodsMap = new Map();
+
+  rows.forEach(row => {
+    if (row.length < 6) return;
+
+    const code = cleanText(row[1]);
+    const name = cleanText(row[2]);
+
+    if (!code) return;
+
+    if (!goodsMap.has(code)) {
+      goodsMap.set(code, name);
+    }
+  });
+
+  const sortedGoods = Array.from(goodsMap.entries()).sort((a, b) =>
+    a[0].localeCompare(b[0], "cs")
+  );
+
+  sortedGoods.forEach(([code, name]) => {
+    const option = document.createElement("option");
+    option.value = code;
+    option.textContent = name ? `${code} – ${name}` : code;
+    select.appendChild(option);
+  });
+}
+
 function filterData(rows) {
-  const goodsCode = document.getElementById("goodsCode").value.trim();
+  const goodsCode = document.getElementById("goodsCode").value;
   const tradeFlow = getSelectedTradeFlow();
 
   return rows.filter(row => {
     if (row.length < 6) return false;
 
-    const code = String(row[1]).replace(/"/g, "").trim();
+    const code = cleanText(row[1]);
 
-    if (goodsCode && !code.startsWith(goodsCode)) {
+    if (goodsCode && code !== goodsCode) {
       return false;
     }
 
-    // Zatím je přepínač vývoz/dovoz jen připraven v rozhraní.
-    // Jakmile budeme mít v datech rozlišení směru obchodu,
-    // doplníme sem skutečné filtrování.
+    // Zatím připraveno jen v UI.
+    // Až bude v datech skutečný směr obchodu,
+    // doplníme sem logiku pro export/import.
     if (tradeFlow === "export") return true;
     if (tradeFlow === "import") return true;
 
@@ -42,7 +75,7 @@ function aggregateByCountry(rows) {
   const sums = {};
 
   rows.forEach(row => {
-    const country = String(row[4]).replace(/"/g, "").trim();
+    const country = cleanText(row[4]);
     const value = parseNumber(row[5]);
 
     if (!country || Number.isNaN(value)) return;
@@ -96,7 +129,7 @@ function renderTable(rows) {
   const headerRow = document.createElement("tr");
   headers.forEach(cell => {
     const th = document.createElement("th");
-    th.textContent = String(cell).replace(/"/g, "");
+    th.textContent = cleanText(cell);
     headerRow.appendChild(th);
   });
   table.appendChild(headerRow);
@@ -105,7 +138,7 @@ function renderTable(rows) {
     const tr = document.createElement("tr");
     row.forEach(cell => {
       const td = document.createElement("td");
-      td.textContent = String(cell).replace(/"/g, "");
+      td.textContent = cleanText(cell);
       tr.appendChild(td);
     });
     table.appendChild(tr);
@@ -128,6 +161,7 @@ fetch("data.csv")
       .split("\n")
       .map(row => row.split(";"));
 
+    populateGoodsSelect(rawRows.slice(1));
     applyFilters();
 
     document
