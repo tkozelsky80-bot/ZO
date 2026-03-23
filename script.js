@@ -70,7 +70,7 @@ function filterData(rows) {
     return true;
   });
 }
-
+function aggregateByCountry(rows) {
 return Object.entries(sums)
   .sort((a, b) => b[1] - a[1])
   .slice(0, 10); // 👈 TADY JE TEN KLÍČ
